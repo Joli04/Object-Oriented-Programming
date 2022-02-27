@@ -5,4 +5,6 @@ public class Schrijver {
     private String achternaam;
     private int leeftijd;
     private boolean nogActief;
+
+
 }
