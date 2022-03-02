@@ -55,22 +55,37 @@ public class SchrijverView extends View {
         ListView geschrevenBoekenListView = new ListView();
 
         GridPane knoppen = new GridPane();
-        Button opslaan = new Button("Opslaan");
-        Button nieuw = new Button("Nieuw");
-        Button bewerken = new Button("Bewerken");
-        Button schakelen = new Button("Schakelen");
+
+        opslaan = new Button("Opslaan");
+        nieuw = new Button("Nieuw");
+        bewerken = new Button("Bewerken");
+        schakelen = new Button("Schakelen");
+
         knoppen.setHgap(95);
         knoppen.setAlignment(Pos.CENTER);
         knoppen.addRow(1,opslaan,nieuw,bewerken,schakelen);
-
-
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.addColumn(1,hboxVoornaam,hboxAchternaam,hboxLeeftijd,hboxNogActief,geschrevenBoeken,geschrevenBoekenListView,knoppen);
         grid.setVgap(10);
 
-
         vbox.getChildren().addAll(grid);
         return vbox;
+    }
+
+    public Button getOpslaan() {
+        return opslaan;
+    }
+
+    public Button getNieuw() {
+        return nieuw;
+    }
+
+    public Button getBewerken() {
+        return bewerken;
+    }
+
+    public Button getSchakelen() {
+        return schakelen;
     }
 }

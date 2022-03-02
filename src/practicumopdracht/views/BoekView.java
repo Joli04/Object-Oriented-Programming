@@ -61,10 +61,10 @@ public class BoekView extends View{
         hoofdstukkenListView.getChildren().addAll(hoofdstukken,listView);
 
         GridPane knoppen = new GridPane();
-        Button opslaan = new Button("Opslaan");
-        Button nieuw = new Button("Nieuw");
-        Button bewerken = new Button("Bewerken");
-        Button schakelen = new Button("Schakelen");
+        opslaan = new Button("Opslaan");
+        nieuw = new Button("Nieuw");
+        bewerken = new Button("Bewerken");
+        schakelen = new Button("Schakelen");
         knoppen.setHgap(95);
         knoppen.setAlignment(Pos.CENTER);
         knoppen.addRow(1,opslaan,nieuw,bewerken,schakelen);
@@ -77,5 +77,20 @@ public class BoekView extends View{
 
 
         return vbox;
+    }
+    public Button getOpslaan() {
+        return opslaan;
+    }
+
+    public Button getNieuw() {
+        return nieuw;
+    }
+
+    public Button getBewerken() {
+        return bewerken;
+    }
+
+    public Button getSchakelen() {
+        return schakelen;
     }
 }
