@@ -1,5 +1,7 @@
 package practicumopdracht.views;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -7,67 +9,81 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
+import practicumopdracht.models.Boek;
+import practicumopdracht.models.Schrijver;
 
 
 public class SchrijverView extends View {
+    private TextArea textAreaVoornaam;
+    private TextArea textAreaAchternaam;
+    private TextField textFieldLeeftijd;
+    private CheckBox checkBoxNogActief;
+    private ListView<Schrijver> alleSchrijversListView;
+
+
     @Override
     protected Parent initializeView(){
         VBox vbox = new VBox();
-        vbox.setPadding(new Insets(10));
-        vbox.setSpacing(20);
+            vbox.setPadding(new Insets(10));
+            vbox.setSpacing(20);
 
         HBox hboxVoornaam = new HBox();
-        hboxVoornaam.setSpacing(23);
+            hboxVoornaam.setSpacing(23);
 
-        Label voornaam = new Label("Voornaam:");
-        TextArea textAreaVoornaam = new TextArea();
-        textAreaVoornaam.setMinWidth(500);
-        textAreaVoornaam.setMaxHeight(7);
+            Label voornaam = new Label("Voornaam:");
+                textAreaVoornaam = new TextArea();
+                textAreaVoornaam.setMinWidth(500);
+                textAreaVoornaam.setMaxHeight(7);
+
         hboxVoornaam.getChildren().addAll(voornaam,textAreaVoornaam);
 
         HBox hboxAchternaam = new HBox();
-        hboxAchternaam.setSpacing(14);
+            hboxAchternaam.setSpacing(14);
 
-        Label achternaam = new Label("Achternaam:");
-        TextArea textAreaAchternaam = new TextArea();
-        textAreaAchternaam.setMinWidth(500);
-        textAreaAchternaam.setMaxHeight(7);
+            Label achternaam = new Label("Achternaam:");
+                textAreaAchternaam = new TextArea();
+                textAreaAchternaam.setMinWidth(500);
+                textAreaAchternaam.setMaxHeight(7);
 
         hboxAchternaam.getChildren().addAll(achternaam,textAreaAchternaam);
 
         HBox hboxLeeftijd = new HBox();
-        hboxLeeftijd.setSpacing(40);
+            hboxLeeftijd.setSpacing(40);
 
-        Label leeftijd = new Label("Leeftijd:");
-        TextField textFieldLeeftijd = new TextField();
+            Label leeftijd = new Label("Leeftijd:");
+            textFieldLeeftijd = new TextField();
 
         hboxLeeftijd.getChildren().addAll(leeftijd,textFieldLeeftijd);
 
 
         HBox hboxNogActief = new HBox();
-        hboxNogActief.setSpacing(22);
-        Label nogActief = new Label("Nog Actief:");
-        CheckBox checkBoxNogActief = new CheckBox();
+            hboxNogActief.setSpacing(22);
+            Label nogActief = new Label("Nog Actief:");
+            checkBoxNogActief = new CheckBox();
         hboxNogActief.getChildren().addAll(nogActief,checkBoxNogActief);
 
-        Label geschrevenBoeken = new Label("Geschreven boeken:");
-        ListView geschrevenBoekenListView = new ListView();
+        Label alleSchrijvers = new Label("Lijst met alle schrijvers:");
+
+        ObservableList<Schrijver> SchrijverObservableList = FXCollections.emptyObservableList();
+        alleSchrijversListView = new ListView<>();
+        alleSchrijversListView.setItems(SchrijverObservableList);
 
         GridPane knoppen = new GridPane();
+            knoppen.setHgap(95);
+            knoppen.setAlignment(Pos.CENTER);
+            opslaan = new Button("Opslaan");
+            nieuw = new Button("Nieuw");
+            verwijderen = new Button("Verwijderen");
+            schakelen = new Button("Schakelen");
 
-        opslaan = new Button("Opslaan");
-        nieuw = new Button("Nieuw");
-        bewerken = new Button("Bewerken");
-        schakelen = new Button("Schakelen");
+        knoppen.addRow(1,opslaan,nieuw,verwijderen,schakelen);
 
-        knoppen.setHgap(95);
-        knoppen.setAlignment(Pos.CENTER);
-        knoppen.addRow(1,opslaan,nieuw,bewerken,schakelen);
         GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.addColumn(1,hboxVoornaam,hboxAchternaam,hboxLeeftijd,hboxNogActief,geschrevenBoeken,geschrevenBoekenListView,knoppen);
-        grid.setVgap(10);
+            grid.setAlignment(Pos.CENTER);
+            grid.setVgap(10);
+
+        grid.addColumn(1,hboxVoornaam,hboxAchternaam,hboxLeeftijd,hboxNogActief,alleSchrijvers,alleSchrijversListView,knoppen);
+
 
         vbox.getChildren().addAll(grid);
         return vbox;
@@ -81,11 +97,32 @@ public class SchrijverView extends View {
         return nieuw;
     }
 
-    public Button getBewerken() {
-        return bewerken;
+    public Button getVerwijderen() {
+        return verwijderen;
     }
 
     public Button getSchakelen() {
         return schakelen;
     }
+
+    public TextArea getTextAreaVoornaam() {
+        return textAreaVoornaam;
+    }
+
+    public TextArea getTextAreaAchternaam() {
+        return textAreaAchternaam;
+    }
+
+    public TextField getTextFieldLeeftijd() {
+        return textFieldLeeftijd;
+    }
+
+    public CheckBox getCheckBoxNogActief() {
+        return checkBoxNogActief;
+    }
+
+    public ListView<Schrijver> getAlleSchrijversListView() {
+        return alleSchrijversListView;
+    }
+
 }

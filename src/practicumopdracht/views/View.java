@@ -6,7 +6,7 @@ import javafx.scene.control.Button;
 public abstract class View {
     private Parent root;
     protected Button nieuw;
-    protected Button bewerken;
+    protected Button verwijderen;
     protected Button schakelen;
     protected Button opslaan;
 
