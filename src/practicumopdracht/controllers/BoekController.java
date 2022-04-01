@@ -4,11 +4,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import practicumopdracht.Main;
 import practicumopdracht.MainApplication;
 import practicumopdracht.data.BoekDAO;
-import practicumopdracht.data.DummyBoekDAO;
-import practicumopdracht.data.SchrijverDAO;
 import practicumopdracht.models.Boek;
 import practicumopdracht.models.Schrijver;
 import practicumopdracht.views.BoekView;
@@ -23,8 +20,8 @@ import java.util.regex.Pattern;
 public class BoekController extends Controller {
 
     private BoekView view;
-    private final int MAX_CONTROLLE = 4;
-    String schrijvernaam;
+    private final int MAX_CONTROLLE = 3;
+    Schrijver hoortBij;
     String titel;
     LocalDate lancering;
     double gemiddeldeCijfer;
@@ -32,16 +29,27 @@ public class BoekController extends Controller {
 
     BoekDAO boekDAO = MainApplication.getBoekDAO();
 
-    List<Boek> boeken = boekDAO.getAll();
-    ObservableList<Boek> observableboeken = FXCollections.observableArrayList(boeken);
+    private void loader(){
+        List<Boek> boeken = boekDAO.getAll();
+        ObservableList<Boek> observableboeken = FXCollections.observableArrayList(boeken);
+        view.getAlleBoekenListView().setItems(observableboeken);
+    }
+
 
     List<Schrijver> schrijversDAO = MainApplication.getSchrijverDAO().getObjects();
-    Schrijver hoortBij;
 
 
-    public BoekController() {
+    public BoekController(Schrijver schrijver) {
         view = new BoekView();
-        view.getAlleBoekenListView().setItems(observableboeken);
+        loader();
+         view.getComboBox().getSelectionModel().selectedItemProperty().addListener((test) -> {
+
+            int getal = view.getComboBox().getSelectionModel().getSelectedIndex();
+
+            hoortBij = schrijversDAO.get(getal);
+
+            return;
+        });
         view.getVerwijderen().setOnAction(actionEvent -> verwijderen());
         view.getNieuw().setOnAction(actionEvent -> nieuw());
         view.getSchakelen().setOnAction(actionEvent -> schakelen());
@@ -49,16 +57,24 @@ public class BoekController extends Controller {
 
 
         view.getComboBox().getItems().addAll(schrijversDAO);
+        view.getComboBox().getSelectionModel().select(schrijver);
 
-        try{
-            hoortBij = schrijversDAO.get(0);
-        }
-        catch(Exception e){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText(null);
-            alert.setContentText("Er is geen schrijver.");
-        }
+        view.getAlleBoekenListView().getSelectionModel().selectedItemProperty().addListener((test) ->{
 
+            try {
+                view.getTitelTextArea().setText(view.getAlleBoekenListView().getSelectionModel().getSelectedItem().getTitel());
+                view.getGemiddeldeCijferTextField().setText(String.valueOf(view.getAlleBoekenListView().getSelectionModel().getSelectedItem().getGemiddeldeCijfer()));
+                view.getLancering().getEditor().setText(String.valueOf(view.getAlleBoekenListView().getSelectionModel().getSelectedItem().getLancering()));
+                loader();
+            }
+            catch (Exception e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setContentText("Het gaat fout");
+                alert.show();
+                return;
+            }
+        });
     }
 
     private void nieuw() {
@@ -126,11 +142,6 @@ public class BoekController extends Controller {
 
         try{
             lancering = view.getLancering().getValue();
-//            String datumInString = datum.toString();
-//            Pattern datumpatern = Pattern.compile("[0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[012])/((?:19|20)[0-9][0-9]]");
-//            Matcher datummatcher = datumpatern.matcher(datumInString);
-//            boolean datumvalidatie = datummatcher.find();
-
             if(lancering == null){
                 throw new ArithmeticException();
             }
@@ -144,25 +155,8 @@ public class BoekController extends Controller {
         }
 
 
-        try{
-            schrijvernaam = view.getComboBox().toString();
-
-            if(hoortBij == null){
-                throw new ArithmeticException();
-            }
-            count++;
-
-        }
-        catch (Exception e){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText(null);
-            alert.setContentText("Je moet een schrijver kiezen");
-            alert.show();
-        }
-
-
         if (count == MAX_CONTROLLE){
-            boek = new Boek(titel,lancering,gemiddeldeCijfer);
+            boek = new Boek(titel,lancering,gemiddeldeCijfer,hoortBij);
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setHeaderText(null);
             alert.setContentText("-Alle waarden zijn correct ingevuld.\n" + boek.toString());

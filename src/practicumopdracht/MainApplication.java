@@ -3,11 +3,10 @@ package practicumopdracht;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import practicumopdracht.controllers.BoekController;
 import practicumopdracht.controllers.Controller;
 import practicumopdracht.controllers.SchrijverController;
 import practicumopdracht.data.*;
-import practicumopdracht.views.BoekView;
+
 
 
 public class MainApplication extends Application {
@@ -31,11 +30,10 @@ public class MainApplication extends Application {
         }
         this.stage = new Stage();
         //schrijverDAO = new DummySchrijverDAO();
+        //schrijverDAO = new BinarySchrijverDAO();
         schrijverDAO = new TextSchrijverDAO();
-        schrijverDAO.load();
-        boekDAO = new DummyBoekDAO();
-        //boekDAO = new TextBoekDAO()
-        boekDAO.load();
+        //boekDAO = new DummyBoekDAO();
+        boekDAO = new TextBoekDAO();
         stage.setMinWidth(new MainApplication().WIDTH);
 
         Controller controller = new SchrijverController();
@@ -45,9 +43,7 @@ public class MainApplication extends Application {
     }
 
     public static void switchController(Controller controller){
-
         Scene scene = new Scene(controller.getView().getRoot());
-
         stage.setTitle(new MainApplication().TITLE);
         stage.setHeight(new MainApplication().HEIGHT);
         stage.setMinWidth(new MainApplication().WIDTH);
@@ -64,3 +60,8 @@ public class MainApplication extends Application {
     }
 
 }
+
+
+
+
+

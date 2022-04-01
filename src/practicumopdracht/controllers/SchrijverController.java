@@ -2,9 +2,9 @@ package practicumopdracht.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import practicumopdracht.data.BoekDAO;
 import practicumopdracht.data.SchrijverDAO;
 import practicumopdracht.models.Schrijver;
 import practicumopdracht.views.SchrijverView;
@@ -24,28 +24,50 @@ public class SchrijverController extends Controller {
     private final int MAX_CONTROLLE = 3;
     Schrijver schrijver;
     SchrijverDAO schrijverDAO = MainApplication.getSchrijverDAO();
+    BoekDAO boekDAO = MainApplication.getBoekDAO();
 
-    List<Schrijver> schrijvers = schrijverDAO.getAll();
-    ObservableList<Schrijver> observableschrijvers = FXCollections.observableArrayList(schrijvers);
+    private void loader() {
+
+        List<Schrijver> schrijvers = schrijverDAO.getAll();
+        ObservableList<Schrijver> observableschrijvers = FXCollections.observableArrayList(schrijvers);
+        view.getAlleSchrijversListView().setItems(observableschrijvers);
+    }
 
 
     public SchrijverController() {
         view = new SchrijverView();
-        view.getAlleSchrijversListView().setItems(observableschrijvers);
+        schrijverDAO.load();
         view.getVerwijderen().setOnAction(actionEvent -> verwijderen());
         view.getNieuw().setOnAction(actionEvent -> nieuw());
         view.getSchakelen().setOnAction(actionEvent -> schakelen());
         view.getOpslaan().setOnAction(actionEvent -> opslaan());
+        view.getLaden().setOnAction(actionEvent -> laden());
+        view.getSave().setOnAction(actionEvent -> save());
+        view.getSluiten().setOnAction(actionEvent -> sluiten());
 
         view.getAlleSchrijversListView().getSelectionModel().selectedItemProperty().addListener((test) -> {
 
             int getal = view.getAlleSchrijversListView().getSelectionModel().getSelectedIndex();
 
-            view.getTextAreaVoornaam().setText(schrijverDAO.getById(getal).toString());
-
-//            view.getTextAreaVoornaam().setText(String.valueOf(schrijverDAO.getById(getal)));
-            view.getTextFieldLeeftijd().setText(String.valueOf(getal));
+            if(schrijverDAO.getById(getal) != null) {
+                view.getTextAreaVoornaam().setText(schrijverDAO.getById(getal).getVoornaam());
+                view.getTextAreaAchternaam().setText(String.valueOf(schrijverDAO.getById(getal).getAchternaam()));
+                view.getTextFieldLeeftijd().setText(String.valueOf(schrijverDAO.getById(getal).getLeeftijd()));
+                view.getCheckBoxNogActief().setSelected(schrijverDAO.getById(getal).isNogActief());
+            }
         });
+
+        view.getSchakelen().setDisable(true);
+        view.getAlleSchrijversListView().getSelectionModel().selectedItemProperty().addListener((test) -> {
+
+            if( test == null) {
+              view.getSchakelen().setDisable(true);
+            }
+            else{
+                view.getSchakelen().setDisable(false);
+            }
+        });
+
     }
 
 
@@ -72,7 +94,8 @@ public class SchrijverController extends Controller {
             Optional<ButtonType> resultaat = alert.showAndWait();
         if(resultaat.isPresent() && resultaat.get() == ButtonType.OK){
             view.getAlleSchrijversListView().getItems().remove(geselecteerdeSchrijver);
-            MainApplication.getSchrijverDAO().remove(geselecteerdeSchrijver);
+            schrijverDAO.remove(geselecteerdeSchrijver);
+            nieuw();
         }
 
     }
@@ -88,7 +111,7 @@ public class SchrijverController extends Controller {
             boolean schrijvervoornaamvalidatie = schrijvermatcher.find();
 
             if(schrijvervoornaam == null || schrijvervoornaamvalidatie == false){
-                throw new ArithmeticException();
+                throw new Exception();
             }
             count++;
 
@@ -107,7 +130,7 @@ public class SchrijverController extends Controller {
             boolean schrijverachternaamvalidatie = schrijverachternaammatcher.find();
 
             if(schrijverachternaam == null || schrijverachternaamvalidatie == false){
-                throw new ArithmeticException();
+                throw new Exception();
             }
             count++;
 
@@ -131,48 +154,103 @@ public class SchrijverController extends Controller {
             alert.show();
         }
 
-        if(view.getCheckBoxNogActief().isSelected()){
-            nogActief = true;
-        }
-        else{
-            nogActief = false;
-        }
+        nogActief = view.getCheckBoxNogActief().isSelected();
 
         if(count == MAX_CONTROLLE){
+            try{
+                if (schrijver == null) {
+                    schrijver = new Schrijver(schrijvervoornaam,schrijverachternaam,leeftijd,nogActief);
+
+                    view.getAlleSchrijversListView().getItems().addAll(schrijver);
+                    schrijverDAO.addOrUpdate(schrijver);
+                }
+                else{
+                    schrijver.setVoornaam(schrijvervoornaam);
+                    schrijver.setAchternaam(schrijverachternaam);
+                    schrijver.setLeeftijd(leeftijd);
+                    schrijver.setNogActief(nogActief);
+
+                    view.getAlleSchrijversListView().refresh();
+                }
+            }
+            catch(Exception e){
+             Alert  alert = new Alert(Alert.AlertType.ERROR, "Er is geen schrijver geselecteerd. ");
+             alert.show();
+
+            }
             schrijver = new Schrijver(schrijvervoornaam,schrijverachternaam,leeftijd,nogActief);
-//            if(schrijvers.contains(schrijver)){
-//
-//                Alert alert = new Alert(Alert.AlertType.ERROR);
-//                alert.setHeaderText(null);
-//                alert.setContentText("Deze schrijver zit al in de lijst");
-//                alert.show();
-//                nieuw();
-//                return;
-//            }
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("Alle waarden zijn correct ingevuld.\n"+ schrijver.toString());
+            Optional<ButtonType> resultaat = alert.showAndWait();
+            if(resultaat.isPresent() && resultaat.get() == ButtonType.CANCEL){
+               return;
+            }
+
             schrijverDAO.addOrUpdate(schrijver);
             view.getAlleSchrijversListView().getItems().addAll(schrijver);
             schrijverDAO.save();
-
-
-
-
-
-
-            
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setHeaderText(null);
-            alert.setContentText("-Alle waarden zijn correct ingevuld."+"\n"+schrijver.toString());
-            alert.show();
             nieuw();
-
-
-
         }
 
     }
     private void schakelen() {
-        Controller controller = new BoekController();
-        MainApplication.switchController(controller);
+
+            Controller controller = new BoekController(view.getAlleSchrijversListView().getSelectionModel().getSelectedItem());
+            MainApplication.switchController(controller);
+
+    }
+
+    private void laden() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText(null);
+        alert.setContentText("Wil je de gegevens laden?");
+        Optional<ButtonType> resultaat = alert.showAndWait();
+        if(resultaat.get() == ButtonType.OK){
+            schrijverDAO.load();
+            boekDAO.load();
+            loader();
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("Alle gegevens zijn goed ingeladen.");
+            alert.show();
+
+        }
+
+    }
+    private void save() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText(null);
+        alert.setContentText("Wil je de gegegevens opslaan?");
+        Optional<ButtonType> resultaat = alert.showAndWait();
+        if (view.getAlleSchrijversListView().getEditingIndex() != 0) {
+            if (resultaat.get() == ButtonType.OK) {
+                boekDAO.save();
+                schrijverDAO.save();
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText(null);
+                alert.setContentText("Alle gegegevens zijn goed opgeslagen.");
+                alert.show();
+
+            }
+        }
+    }
+
+    private void sluiten() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText(null);
+        alert.setContentText("Wil je de code nog een keer opslaan?");
+        Optional<ButtonType> resultaat = alert.showAndWait();
+        if(resultaat.isPresent() && resultaat.get() == ButtonType.OK){
+            schrijverDAO.save();
+            boekDAO.save();
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("Alle gegegevens zijn goed opgeslagen.");
+            alert.showAndWait();
+            System.exit(0);
+        }
+        System.exit(0);
     }
 
     @Override

@@ -9,8 +9,11 @@ import java.util.List;
 public abstract class BoekDAO implements DAO<Boek> {
     protected List<Boek> objects = new ArrayList<>();
 
-    public List<Boek> getAllFor(Schrijver object){
-        return (List<Boek>) object;
+    public int getAllFor(Schrijver object){
+        if (objects.contains(object)) {
+            return objects.indexOf(object);
+        }
+        return -1;
     }
 
     public abstract boolean save();

@@ -13,7 +13,37 @@ public class Schrijver {
         this.nogActief = nogActief;
     }
 
+    public String getVoornaam() {
+        return voornaam;
+    }
 
+    public String getAchternaam() {
+        return achternaam;
+    }
+
+    public int getLeeftijd() {
+        return leeftijd;
+    }
+
+    public boolean isNogActief() {
+        return nogActief;
+    }
+
+    public void setVoornaam(String voornaam) {
+        this.voornaam = voornaam;
+    }
+
+    public void setAchternaam(String achternaam) {
+        this.achternaam = achternaam;
+    }
+
+    public void setLeeftijd(int leeftijd) {
+        this.leeftijd = leeftijd;
+    }
+
+    public void setNogActief(boolean nogActief) {
+        this.nogActief = nogActief;
+    }
 
     @Override
     public String toString() {

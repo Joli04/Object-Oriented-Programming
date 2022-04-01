@@ -8,19 +8,27 @@ import java.util.List;
 public abstract class SchrijverDAO implements DAO<Schrijver> {
     protected List<Schrijver> objects = new ArrayList<>();
 
-    public Schrijver getById(int id){
-        try{
+    public Schrijver getById(int id) {
+        try {
             return objects.get(id);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
+    }
+
+    public int getIdFor(Schrijver object){
+        if(objects.contains(object)){
+            return objects.indexOf(object);
+        }
+        else{
+            return -1;
+        }
+
     }
 
     public abstract boolean save();
 
     public abstract boolean load();
-
 
 
     @Override

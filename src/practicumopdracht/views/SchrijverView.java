@@ -6,10 +6,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import practicumopdracht.models.Boek;
 import practicumopdracht.models.Schrijver;
 
 
@@ -19,6 +19,9 @@ public class SchrijverView extends View {
     private TextField textFieldLeeftijd;
     private CheckBox checkBoxNogActief;
     private ListView<Schrijver> alleSchrijversListView;
+    private MenuItem laden;
+    private MenuItem save;
+    private MenuItem sluiten;
 
 
     @Override
@@ -26,6 +29,18 @@ public class SchrijverView extends View {
         VBox vbox = new VBox();
             vbox.setPadding(new Insets(10));
             vbox.setSpacing(20);
+        BorderPane borderPane = new BorderPane();
+
+        MenuBar menuBar = new MenuBar();
+
+        Menu menu = new Menu("Bestand");
+        laden = new MenuItem("Laden");
+        save = new MenuItem("Opslaan");
+        sluiten = new MenuItem("Afsluiten");
+        menu.getItems().addAll(laden,save,sluiten);
+        menuBar.getMenus().add(menu);
+
+        borderPane.setTop(menuBar);
 
         HBox hboxVoornaam = new HBox();
             hboxVoornaam.setSpacing(23);
@@ -82,7 +97,7 @@ public class SchrijverView extends View {
             grid.setAlignment(Pos.CENTER);
             grid.setVgap(10);
 
-        grid.addColumn(1,hboxVoornaam,hboxAchternaam,hboxLeeftijd,hboxNogActief,alleSchrijvers,alleSchrijversListView,knoppen);
+        grid.addColumn(1,menuBar,hboxVoornaam,hboxAchternaam,hboxLeeftijd,hboxNogActief,alleSchrijvers,alleSchrijversListView,knoppen);
 
 
         vbox.getChildren().addAll(grid);
@@ -125,4 +140,15 @@ public class SchrijverView extends View {
         return alleSchrijversListView;
     }
 
+    public MenuItem getLaden(){
+        return laden;
+    }
+
+    public MenuItem getSave() {
+        return save;
+    }
+
+    public MenuItem getSluiten() {
+        return sluiten;
+    }
 }

@@ -11,10 +11,11 @@ public class Boek {
     private double gemiddeldeCijfer;
 
 
-    public Boek(String titel, LocalDate lancering, double gemiddeldeCijfer) {
+    public Boek(String titel, LocalDate lancering, double gemiddeldeCijfer, Schrijver hoortBij) {
         this.titel = titel;
         this.lancering = lancering;
         this.gemiddeldeCijfer = gemiddeldeCijfer;
+        this.hoortBij = hoortBij;
     }
 
     public void setHoortBij(Schrijver hoortBij) {
@@ -31,6 +32,23 @@ public class Boek {
 
     public void setGemiddeldeCijfer(double gemiddeldeCijfer) {
         this.gemiddeldeCijfer = gemiddeldeCijfer;
+    }
+
+
+    public Schrijver getHoortBij() {
+        return hoortBij;
+    }
+
+    public String getTitel() {
+        return titel;
+    }
+
+    public LocalDate getLancering() {
+        return lancering;
+    }
+
+    public double getGemiddeldeCijfer() {
+        return gemiddeldeCijfer;
     }
 
     @Override
