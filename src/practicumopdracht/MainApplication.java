@@ -10,12 +10,17 @@ import practicumopdracht.data.*;
 
 
 public class MainApplication extends Application {
+
     private final String TITLE = String.format("Practicumopdracht OOP2 - %s", Main.studentNaam);
     private final int WIDTH = 950;
     private final int HEIGHT = 480;
     private static Stage stage;
     private static SchrijverDAO schrijverDAO;
     private static BoekDAO boekDAO;
+
+    /**
+     * @param stage is de stage waar de scene's op worden gezet.
+     */
 
 
 
@@ -39,8 +44,12 @@ public class MainApplication extends Application {
         Controller controller = new SchrijverController();
         switchController(controller);
 
-
     }
+
+    /**
+     *
+     * @param controller is de controller die ervoor zorgt dat de views kunnen schakelen.
+     */
 
     public static void switchController(Controller controller){
         Scene scene = new Scene(controller.getView().getRoot());
@@ -50,6 +59,11 @@ public class MainApplication extends Application {
         stage.setScene(scene);
         stage.show();
     }
+
+    /**
+     *
+     * @return geeft de waarden van de variabele schrijverDAO en boekDAO
+     */
 
     public static SchrijverDAO getSchrijverDAO() {
         return schrijverDAO;
