@@ -2,6 +2,7 @@ package practicumopdracht;
 
 import javafx.application.Application;
 import java.time.LocalDate;
+import java.util.Locale;
 
 public class Main {
 
@@ -12,6 +13,7 @@ public class Main {
     public static boolean launchedFromMain;
 
     public static void main(String[] args) {
+        Locale.setDefault(Locale.ENGLISH);
         launchedFromMain = true;
 
         if(!jaIkAccepteer) {
@@ -19,6 +21,7 @@ public class Main {
 
             return;
         }
+
 
         Application.launch(MainApplication.class, args);
     }

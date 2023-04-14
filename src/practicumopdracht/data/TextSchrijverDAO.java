@@ -4,6 +4,7 @@ import practicumopdracht.models.Schrijver;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
@@ -23,8 +24,16 @@ public class TextSchrijverDAO extends SchrijverDAO {
                 printwriter.println(schrijver.isNogActief());
             }
 
-        } catch (FileNotFoundException e) {
-            System.out.println("Bestand is niet gevonden!");
+        }
+        catch (FileNotFoundException e) {
+            System.err.println("Bestand is niet gevonden!");
+        }
+        catch (InputMismatchException e) {
+            System.err.println("Er is een verkeerde waarde ingevuld");
+        }
+        catch (Exception e){
+            System.err.println("Er is iets fout gegaan!");
+            e.printStackTrace();
         }
         return true;
     }
@@ -39,9 +48,8 @@ public class TextSchrijverDAO extends SchrijverDAO {
             scanner.nextLine();
 
             for (int i = 0; i < aantal; i++) {
-                String voornaam = scanner.next();
-                String achternaam = scanner.next();
-                scanner.nextLine();
+                String voornaam = scanner.nextLine();
+                String achternaam = scanner.nextLine();
                 int leeftijd = scanner.nextInt();
                 scanner.nextLine();
                 boolean nogActief = scanner.hasNext();

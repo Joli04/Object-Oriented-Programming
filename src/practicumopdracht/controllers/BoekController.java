@@ -5,6 +5,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import practicumopdracht.MainApplication;
+import practicumopdracht.comparators.GemiddeldeComparator;
+import practicumopdracht.comparators.VoornaamComparator;
 import practicumopdracht.data.BoekDAO;
 import practicumopdracht.models.Boek;
 import practicumopdracht.models.Schrijver;
@@ -28,10 +30,11 @@ public class BoekController extends Controller {
     Boek boek;
 
     BoekDAO boekDAO = MainApplication.getBoekDAO();
+    List<Boek> boeken = boekDAO.getAll();
 
-    private void loader(){
-        List<Boek> boeken = boekDAO.getAll();
+    private void loader() {
         ObservableList<Boek> observableboeken = FXCollections.observableArrayList(boeken);
+        FXCollections.sort(observableboeken, new GemiddeldeComparator());
         view.getAlleBoekenListView().setItems(observableboeken);
     }
 
@@ -40,40 +43,25 @@ public class BoekController extends Controller {
 
 
     public BoekController(Schrijver schrijver) {
+
         view = new BoekView();
         loader();
-         view.getComboBox().getSelectionModel().selectedItemProperty().addListener((test) -> {
-
-            int getal = view.getComboBox().getSelectionModel().getSelectedIndex();
-
-            hoortBij = schrijversDAO.get(getal);
-
-            return;
-        });
         view.getVerwijderen().setOnAction(actionEvent -> verwijderen());
         view.getNieuw().setOnAction(actionEvent -> nieuw());
         view.getSchakelen().setOnAction(actionEvent -> schakelen());
         view.getOpslaan().setOnAction(actionEvent -> opslaan());
 
-
         view.getComboBox().getItems().addAll(schrijversDAO);
         view.getComboBox().getSelectionModel().select(schrijver);
+        hoortBij = (Schrijver) view.getComboBox().getSelectionModel().getSelectedItem();
 
-        view.getAlleBoekenListView().getSelectionModel().selectedItemProperty().addListener((test) ->{
-
-            try {
+        view.getAlleBoekenListView().getSelectionModel().selectedItemProperty().addListener((boek) -> {
+            if (view.getAlleBoekenListView().getSelectionModel().getSelectedItem() != null) {
                 view.getTitelTextArea().setText(view.getAlleBoekenListView().getSelectionModel().getSelectedItem().getTitel());
                 view.getGemiddeldeCijferTextField().setText(String.valueOf(view.getAlleBoekenListView().getSelectionModel().getSelectedItem().getGemiddeldeCijfer()));
                 view.getLancering().getEditor().setText(String.valueOf(view.getAlleBoekenListView().getSelectionModel().getSelectedItem().getLancering()));
-                loader();
             }
-            catch (Exception e){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText(null);
-                alert.setContentText("Het gaat fout");
-                alert.show();
-                return;
-            }
+
         });
     }
 
@@ -81,13 +69,12 @@ public class BoekController extends Controller {
         view.getTitelTextArea().clear();
         view.getLancering().getEditor().clear();
         view.getGemiddeldeCijferTextField().clear();
-        view.getComboBox().cancelEdit();
         view.getAlleBoekenListView().getSelectionModel().clearSelection();
     }
 
     private void verwijderen() {
         Boek geselecteerdeBoek = view.getAlleBoekenListView().getSelectionModel().getSelectedItem();
-        if(geselecteerdeBoek == null){
+        if (geselecteerdeBoek == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
             alert.setContentText("Er is geen boek geselecteerd");
@@ -97,77 +84,116 @@ public class BoekController extends Controller {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setHeaderText(null);
         alert.setContentText("Weet je zeker dat je dit boek wilt verwijderen?");
+
         Optional<ButtonType> resultaat = alert.showAndWait();
-        if(resultaat.isPresent() && resultaat.get() == ButtonType.OK){
+
+        if (resultaat.isPresent() && resultaat.get() == ButtonType.OK) {
             view.getAlleBoekenListView().getItems().remove(geselecteerdeBoek);
-            MainApplication.getBoekDAO().remove(geselecteerdeBoek);
+            boekDAO.remove(geselecteerdeBoek);
+            nieuw();
         }
 
     }
 
     private void opslaan() {
-
         Pattern pattern = Pattern.compile("[a-zA-Z]");
         int count = 0;
 
-        try{
+        try {
             titel = view.getTitelTextArea().getText();
             Matcher titelmatcher = pattern.matcher(titel);
             boolean titelvalidatie = titelmatcher.find();
 
-            if(titel == null || titelvalidatie == false){
+            if (titel == null || !titelvalidatie) {
                 throw new ArithmeticException();
             }
             count++;
-        }
-        catch (Exception e){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
+        } catch (Exception e) {
+            alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
             alert.setContentText("Je moet een titel invoeren");
             alert.show();
         }
 
-        try{
+        try {
             String tekstveld = view.getGemiddeldeCijferTextField().getText();
             gemiddeldeCijfer = Double.parseDouble(tekstveld);
+
+            if (gemiddeldeCijfer < 0 || gemiddeldeCijfer > 10) {
+                throw new Exception();
+            }
             count++;
-        }
-        catch(Exception e){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
+        } catch (Exception e) {
+            alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
-            alert.setContentText("Je moet een getal invoeren");
+            alert.setContentText("Je moet een getal invoeren dat voldoet aan de eisen");
             alert.show();
         }
 
 
-        try{
+        try {
             lancering = view.getLancering().getValue();
-            if(lancering == null){
+            if (lancering == null) {
                 throw new ArithmeticException();
             }
             count++;
-        }
-        catch(Exception e){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
+        } catch (Exception e) {
+            alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
             alert.setContentText("Je moet een datum invoeren");
             alert.show();
         }
 
+        if (count == MAX_CONTROLLE) {
+            if (view.getAlleBoekenListView().getSelectionModel().getSelectedItem() == null) {
+                try {
+                    boek = new Boek(titel, lancering, gemiddeldeCijfer, hoortBij);
+                    alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setHeaderText(null);
+                    alert.setContentText("-Alle waarden zijn correct ingevuld.\n" + boek.toString());
 
-        if (count == MAX_CONTROLLE){
-            boek = new Boek(titel,lancering,gemiddeldeCijfer,hoortBij);
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setHeaderText(null);
-            alert.setContentText("-Alle waarden zijn correct ingevuld.\n" + boek.toString());
-            alert.show();
+                    Optional<ButtonType> resultaat = alert.showAndWait();
 
-            view.getAlleBoekenListView().getItems().addAll(boek);
-            MainApplication.getBoekDAO().addOrUpdate(boek);
+                    if (resultaat.isPresent() && resultaat.get() != ButtonType.CANCEL) {
+                        view.getAlleBoekenListView().getItems().addAll(boek);
+                        boekDAO.addOrUpdate(boek);
+                        loader();
+                        nieuw();
+                    }
 
-            nieuw();
+                } catch (Exception e) {
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Er is iets fout gegaan tijdens het opslaan. Controlleer de ingevulde gegevens");
+                    alert.show();
+                }
+            } else {
+                try {
+                    boek = view.getAlleBoekenListView().getSelectionModel().getSelectedItem();
+                    boek.setTitel(titel);
+                    boek.setLancering(lancering);
+                    boek.setGemiddeldeCijfer(gemiddeldeCijfer);
+                    boek.setHoortBij(hoortBij);
+
+                    alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Alle waarden zijn correct ingevuld.\n" + boek.toString());
+                    Optional<ButtonType> resultaat = alert.showAndWait();
+                    if (resultaat.isPresent() && resultaat.get() != ButtonType.CANCEL) {
+                        view.getAlleBoekenListView().refresh();
+                        loader();
+                        nieuw();
+                    }
+                } catch (Exception e) {
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Er is iets fout gegaan bij het aanpassen van de gegevens. Controlleer alle velden nog eens!");
+                    alert.show();
+                }
+            }
         }
     }
+
     private void schakelen() {
 
         Controller controller = new SchrijverController();
@@ -176,7 +202,7 @@ public class BoekController extends Controller {
 
 
     @Override
-    public View getView(){
+    public View getView() {
         return view;
     }
 }

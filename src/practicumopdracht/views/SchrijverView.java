@@ -22,6 +22,8 @@ public class SchrijverView extends View {
     private MenuItem laden;
     private MenuItem save;
     private MenuItem sluiten;
+    private MenuItem voornaamAZ;
+    private MenuItem voornaamZA;
 
 
     @Override
@@ -33,12 +35,18 @@ public class SchrijverView extends View {
 
         MenuBar menuBar = new MenuBar();
 
-        Menu menu = new Menu("Bestand");
+        Menu bestand = new Menu("Bestand");
         laden = new MenuItem("Laden");
         save = new MenuItem("Opslaan");
         sluiten = new MenuItem("Afsluiten");
-        menu.getItems().addAll(laden,save,sluiten);
-        menuBar.getMenus().add(menu);
+        bestand.getItems().addAll(laden,save,sluiten);
+
+        Menu sorteren = new Menu("Sorteren");
+        voornaamAZ = new MenuItem("Voornaam (A-Z)");
+        voornaamZA = new MenuItem("Voornaam (Z-A)");
+        sorteren.getItems().addAll(voornaamAZ,voornaamZA);
+
+        menuBar.getMenus().addAll(bestand,sorteren);
 
         borderPane.setTop(menuBar);
 
@@ -65,7 +73,7 @@ public class SchrijverView extends View {
         HBox hboxLeeftijd = new HBox();
             hboxLeeftijd.setSpacing(40);
 
-            Label leeftijd = new Label("Leeftijd:");
+            Label leeftijd = new Label("Leeftijd (De minimum leeftijd is 12):");
             textFieldLeeftijd = new TextField();
 
         hboxLeeftijd.getChildren().addAll(leeftijd,textFieldLeeftijd);
@@ -73,7 +81,7 @@ public class SchrijverView extends View {
 
         HBox hboxNogActief = new HBox();
             hboxNogActief.setSpacing(22);
-            Label nogActief = new Label("Nog Actief:");
+            Label nogActief = new Label("Nog Actief (Vanaf 65 jaar en ouder is automatisch niet meer actief):");
             checkBoxNogActief = new CheckBox();
         hboxNogActief.getChildren().addAll(nogActief,checkBoxNogActief);
 
@@ -150,5 +158,13 @@ public class SchrijverView extends View {
 
     public MenuItem getSluiten() {
         return sluiten;
+    }
+
+    public MenuItem getVoornaamAZ() {
+        return voornaamAZ;
+    }
+
+    public MenuItem getVoornaamZA() {
+        return voornaamZA;
     }
 }

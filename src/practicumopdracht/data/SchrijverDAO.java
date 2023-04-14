@@ -9,7 +9,7 @@ public abstract class SchrijverDAO implements DAO<Schrijver> {
     protected List<Schrijver> objects = new ArrayList<>();
 
     public Schrijver getById(int id) {
-        try {
+        try{
             return objects.get(id);
         } catch (Exception e) {
             return null;

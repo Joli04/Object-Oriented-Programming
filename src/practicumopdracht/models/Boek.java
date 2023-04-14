@@ -1,11 +1,10 @@
 package practicumopdracht.models;
 
-import com.sun.glass.ui.Menu;
-
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Boek {
-    private Schrijver hoortBij;
+public class Boek implements Serializable {
+    private static Schrijver hoortBij;
     private String titel;
     private LocalDate lancering;
     private double gemiddeldeCijfer;
@@ -53,6 +52,6 @@ public class Boek {
 
     @Override
     public String toString() {
-        return "titel: " + titel+"\n"+"lancering: "+lancering+"\n"+"gemiddeldeCijfer: " + gemiddeldeCijfer +"\n";
+        return "titel: " + titel + "\n" + "lancering: " + lancering + "\n" + "gemiddeldeCijfer: " + gemiddeldeCijfer + "\n";
     }
 }

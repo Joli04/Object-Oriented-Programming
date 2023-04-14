@@ -40,13 +40,14 @@ public class TextBoekDAO extends BoekDAO{
 
         try (Scanner scanner = new Scanner(file)) {
 
-            int aantal = scanner.nextInt();;
+            int aantal = scanner.nextInt();
+            scanner.nextLine();
 
             for (int i = 0; i < aantal; i++) {
                 String titel = scanner.nextLine();
-                double gemiddeldeCijfer = scanner.nextDouble();
-                scanner.nextLine();
                 String lancering = scanner.nextLine();
+                scanner.nextLine();
+                double gemiddeldeCijfer = scanner.nextDouble();
                 int index = scanner.nextInt();
                 Schrijver schrijver = MainApplication.getSchrijverDAO().getById(index);
 

@@ -75,7 +75,7 @@ public class BoekView extends View{
         HBox gemiddeldeCijferHbox = new HBox();
             gemiddeldeCijferHbox.setSpacing(45);
 
-        Label gemiddeldeCijferLabel = new Label("Gemiddelde cijfer: ");
+        Label gemiddeldeCijferLabel = new Label("Gemiddelde cijfer(0-10): ");
             gemiddeldeCijferTextField = new TextField();
 
         gemiddeldeCijferHbox.getChildren().addAll(gemiddeldeCijferLabel,gemiddeldeCijferTextField);

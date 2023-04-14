@@ -3,10 +3,12 @@ package practicumopdracht;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import practicumopdracht.comparators.VoornaamComparator;
 import practicumopdracht.controllers.Controller;
 import practicumopdracht.controllers.SchrijverController;
 import practicumopdracht.data.*;
 
+import java.util.Comparator;
 
 
 public class MainApplication extends Application {
@@ -17,6 +19,7 @@ public class MainApplication extends Application {
     private static Stage stage;
     private static SchrijverDAO schrijverDAO;
     private static BoekDAO boekDAO;
+
 
     /**
      * @param stage is de stage waar de scene's op worden gezet.
@@ -34,11 +37,17 @@ public class MainApplication extends Application {
 
         }
         this.stage = new Stage();
+
         //schrijverDAO = new DummySchrijverDAO();
-        //schrijverDAO = new BinarySchrijverDAO();
-        schrijverDAO = new TextSchrijverDAO();
+        //schrijverDAO = new TextSchrijverDAO();
+        schrijverDAO = new BinarySchrijverDAO();
+
+        schrijverDAO.load();
+
         //boekDAO = new DummyBoekDAO();
         boekDAO = new TextBoekDAO();
+        //boekDAO = new ObjectBoekDAO();
+
         stage.setMinWidth(new MainApplication().WIDTH);
 
         Controller controller = new SchrijverController();

@@ -10,14 +10,14 @@ public abstract class View {
     protected Button schakelen;
     protected Button opslaan;
 
-    public View(){
+    public View() {
         this.root = initializeView();
     }
 
     protected abstract Parent initializeView();
 
 
-    public Parent getRoot(){
+    public Parent getRoot() {
         return root;
     }
 
